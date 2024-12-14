@@ -1,7 +1,7 @@
 import generateToken from "../lib/utils.js";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary.js"
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   let { fullName, email, password } = req.body;
@@ -67,53 +67,53 @@ export const login = async (req, res) => {
   } catch (error) {
     console.log("Error in login Controller.", error.message);
     res.status(500).json({ message: "Internal Server Error" });
-}
+  }
 };
 
 export const logout = (req, res) => {
-    try{
-        res.cookie("jwt","",{maxAge: 0})
-        res.status(200).json({message: "Logged out successfully"})
-    }
-    catch(error){
-      console.log("Error in logout Controller.", error.message);
-      res.status(500).json({ message: "Internal Server Error" });
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log("Error in logout Controller.", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const update = async (req,res) =>{
+export const update = async (req, res) => {
   try {
-    const {fullName,profilePic} = req.body
-    // const {profilePic} = req.file
-    const userId = req.user._id
-    if(!profilePic){
-      return res.status(400).json({message: "Profile pic is required"})
+    const { profilePic } = req.body;
+    const userId = req.user._id;
+    if (!profilePic) {
+      return res.status(400).json({ message: "Profile pic is required" });
     }
-    if(fullName.length < 6){
-      return res.status(400).json({message: "Fullname is required"})
-    }
-    let uploadResponse = await cloudinary.uploader.upload(profilePic)
+    let uploadResponse = await cloudinary.uploader.upload(profilePic,{
+      folder: 'chatApp' // Specify the folder here
+    });
     try {
-      let updatedUser = await User.findByIdAndUpdate(userId,{fullName,profilePic: uploadResponse.secure_url}, {new: true})
-      console.log('Uploaded Image:', updatedUser);
-      res.status(200).json(updatedUser)
+      let updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { profilePic: uploadResponse.secure_url },
+        { new: true }
+      );
+      console.log("Uploaded Image:", updatedUser);
+      res.status(200).json(updatedUser);
     } catch (error) {
-      console.error('Error uploading image:', error.message);
-      res.status(500).json({message: "Internal Server Error"})
+      console.error("Error uploading image:", error.message);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-    
   } catch (error) {
-    console.log("Error in update controller.",error.message);
-    res.status(500).json({message: "Internal Server Error."})
+    console.log("Error in update controller.", error.message);
+    res.status(500).json({ message: "Internal Server Error." });
   }
-}
+};
 
 // To check if a user is authenticated after each refresh
-export const checkAuth = (req,res) =>{
+export const checkAuth = (req, res) => {
   try {
-    res.status(200).json(req.user)
+    res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in checkAuth controller", error.message)
-    res.status(500).json({message: "Internal Server Error"})
+    console.log("Error in checkAuth controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};

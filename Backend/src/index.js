@@ -13,12 +13,12 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [process.env.ORIGIN,"http://localhost:5173"],
   credentials: true
 }))
 
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoute);
+app.use("/api/messages", messageRoute);
 
 app.listen(PORT, () => {
   console.log(`Listening to port http://localhost:${PORT}`);
