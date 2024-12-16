@@ -11,7 +11,8 @@ const PORT = process.env.PORT;
 const app = express();
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Adjust the size
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
   origin: [process.env.ORIGIN,"http://localhost:5173"],
   credentials: true

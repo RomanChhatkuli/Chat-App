@@ -13,7 +13,6 @@ function App() {
   useEffect(() => {
     checkAuth()
   }, [])
-  console.log(authUser)
   if (isCheckingAuth && !authUser) {
     return (
       <div className="w-[100vw] h-[100vh] flex justify-center items-center">
