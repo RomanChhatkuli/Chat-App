@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useChatStore } from '../store/useChatStore.js'
 import SidebarSkeleton from './skeletons/SidebarSkeleton.jsx';
 import { User, Users } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore.js';
 
 function Sidebar() {
-    const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, onlineUsers } = useChatStore();
+    const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
+    const { onlineUsers } = useAuthStore();
+    const [showOnline,setShowOnline] = useState(false)
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -12,6 +15,8 @@ function Sidebar() {
         }
         fetchUsers()
     }, [])
+
+    const filteredUser = showOnline ? users.filter((user) => onlineUsers.includes(user._id)) : users
 
     if (isUsersLoading) return <div className='text-[#d4a853]'> <SidebarSkeleton /> </div>
 
@@ -27,12 +32,13 @@ function Sidebar() {
 
                     {/* TODO  */}
                     <div className='hidden lg:block'>
-                        <label className="flex items-center gap-2 text-sm mt-2">
+                        <label className="flex items-center gap-2 text-sm mt-2 ">
                             <input
                                 type="checkbox"
-                                className="rounded-full border-zinc-700  focus:ring focus:ring-zinc-600"
+                                onChange={(e) => setShowOnline(e.target.checked)}
+                                className="checkbox checkbox-sm checkbox-warning"
                             />
-                            Show online only <span className='text-zinc-700'>(0 online)</span>
+                            Show online only <span className='text-zinc-700'>({onlineUsers.length-1} online)</span>
                         </label>
                     </div>
                 </div>
@@ -40,7 +46,7 @@ function Sidebar() {
                 {/* Scrollable Contact List */}
                 <div className="flex-1 overflow-y-auto">
                     <div className="md:p-2">
-                        {users.map((user) => (
+                        {filteredUser.map((user) => (
                             <button
                                 key={user._id}
                                 onClick={() => setSelectedUser(user)}
@@ -59,10 +65,15 @@ function Sidebar() {
                                 </div>
                                 <div className="flex flex-col items-start">
                                     <span className="text-sm hidden lg:block font-medium">{user.fullName}</span>
-                                    <span className="text-xs hidden lg:block text-zinc-500">Offline</span>
+                                    <span className="text-xs hidden lg:block text-zinc-500">{onlineUsers.includes(user._id)? "Online" : "Offline"}</span>
                                 </div>
                             </button>
                         ))}
+                        {filteredUser.length == 0 && (
+                            <div className='text-center mt-9 text-zinc-500'>
+                                No Online Users
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

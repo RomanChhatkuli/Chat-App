@@ -6,9 +6,9 @@ import messageRoute from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
+import { app, server } from "./lib/socket.io.js";
 
 const PORT = process.env.PORT;
-const app = express();
 
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' })); // Adjust the size
@@ -21,7 +21,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoute);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Listening to port http://localhost:${PORT}`);
   connectDB();
 });

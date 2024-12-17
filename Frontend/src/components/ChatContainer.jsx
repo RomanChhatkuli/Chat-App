@@ -7,19 +7,25 @@ import { useAuthStore } from '../store/useAuthStore.js';
 import { getTime } from '../lib/time.js';
 
 function ChatContainer() {
-  const { isMessageLoading, messages, selectedUser, getMessages } = useChatStore();
+  const { isMessageLoading, messages, selectedUser, getMessages, suscribeToMessages, unSuscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore()
   const scrollChat = useRef(null)
 
   useEffect(() => {
     getMessages(selectedUser._id);
-  }, [selectedUser._id, getMessages]); 
+    suscribeToMessages();
+    return () => unSuscribeFromMessages();
+  }, [selectedUser._id, getMessages, suscribeToMessages, unSuscribeFromMessages]);
 
   useEffect(() => {
-    if (scrollChat.current) {
-      scrollChat.current.scrollTop = scrollChat.current.scrollHeight;
+    if(scrollChat.current && messages){
+      scrollChat.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest"
+      })  
     }
-  }, [messages]); 
+  }, [messages]);
 
   if (isMessageLoading) {
     return (
@@ -35,10 +41,10 @@ function ChatContainer() {
     <div className='flex-1 flex flex-col overflow-auto text-white '>
       <ChatHeader />
 
-      <div className='flex-1 overflow-y-auto p-4 space-y-4 ' ref={scrollChat}>
+      <div className='flex-1 overflow-y-auto p-4 space-y-4 '>
         {messages.map((message) => {
           return authUser._id === message.senderId ? (
-            <div className="chat chat-start" key={message._id}>
+            <div className="chat chat-start" key={message._id} ref={scrollChat}>
               <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                   <img
@@ -53,7 +59,7 @@ function ChatContainer() {
               </div>
             </div>
           ) : (
-            <div className="chat chat-end" key={message._id}>
+            <div className="chat chat-end" key={message._id} ref={scrollChat}>
               <time className='text-xs opacity-50 ml-1 mb-1' >{getTime(message.createdAt)}</time>
               <div className='chat-bubble flex flex-col'>
                 {message.image && (<div className="sm:max-w-[200px] rounded-md mb-2"><img src={message.image} alt={selectedUser?.fullName} /></div>)}
