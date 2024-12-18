@@ -8,13 +8,13 @@ import cookieParser from "cookie-parser";
 import cors from 'cors'
 import { app, server } from "./lib/socket.io.js";
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' })); // Adjust the size
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
-  origin: [process.env.ORIGIN,"http://localhost:5173"],
+  origin: process.env.ORIGIN,
   credentials: true
 }))
 
