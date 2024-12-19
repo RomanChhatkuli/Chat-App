@@ -27,14 +27,19 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoute);
 
-// Serve static files for the frontend (React app)
-app.use(express.static(path.join(__dirname, 'build'))); // Make sure 'build' is the correct path to your frontend build folder
 
-// Catch-all route for non-API routes, serve index.html for client-side routing
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Catch-all route for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
 
 server.listen(PORT, () => {
   connectDB();
 });
+
+
+
+
