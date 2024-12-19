@@ -7,10 +7,10 @@ export default function generateToken(userId, res){
 
     res.cookie("jwt",token,{
         maxAge: 7*24*60*60*1000,
-        // httpOnly: true,
-        // sameSite: "None",
-        // secure: process.env.NODE_ENV === "production"
+        httpOnly: true,
+        sameSite: 'None', // SameSite only required for cross-origin requests (production)
+        secure: true,  // Use secure cookies only in production (HTTPS)
     })
-
+    
     return token
 }

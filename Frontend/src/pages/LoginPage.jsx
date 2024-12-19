@@ -2,6 +2,7 @@ import { useState } from "react"
 import { MessageSquare, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useAuthStore } from "../store/useAuthStore.js"
 import { Link } from "react-router-dom"
+import toast from "react-hot-toast"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
