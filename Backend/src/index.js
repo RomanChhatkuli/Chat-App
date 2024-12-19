@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(express.json({ limit: '50mb' })); // Adjust the size
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
-  origin: process.env.ORIGIN,
+  origin: [process.env.ORIGIN],
   credentials: true
 }))
 
