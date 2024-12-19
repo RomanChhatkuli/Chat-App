@@ -7,8 +7,14 @@ import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
 import { app, server } from "./lib/socket.io.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const PORT = process.env.PORT || 8080;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' })); // Adjust the size
@@ -20,6 +26,14 @@ app.use(cors({
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoute);
+
+// Serve static files for the frontend (React app)
+app.use(express.static(path.join(__dirname, 'build'))); // Make sure 'build' is the correct path to your frontend build folder
+
+// Catch-all route for non-API routes, serve index.html for client-side routing
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 server.listen(PORT, () => {
   connectDB();
